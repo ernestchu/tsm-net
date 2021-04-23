@@ -40,7 +40,7 @@ class ConvBlock(nn.Module):
         )]
         if norm_layer:
             layers.append(norm_layer(out_channels))
-        layers.append(nn.Tanh())
+        layers.append(nn.ReLU())
         if dropout:
             layers.append(nn.Dropout(dropout))
         
@@ -75,6 +75,16 @@ class ContentEncoder(nn.Module):
     def forward(self, x):
         return self.model(x)
     
+class TempoEmbedding(nn.Module):
+    '''
+    Neural embedding for the tempo
+    '''
+    def __init__(
+        self,
+        in_channels=1
+    ):
+        super(TempoEmbedding, self).__init__()
+
 if __name__ == "__main__":
     model = ContentEncoder()
     print(model)

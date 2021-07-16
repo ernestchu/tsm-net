@@ -27,7 +27,7 @@ class ConvBlock(nn.Module):
         kernel_size: int = 4,
         padding: int = 0,
         stride: int = 1,
-        norm_layer = nn.InstanceNorm1d,
+        norm_layer = nn.BatchNorm1d,
         dropout: float = 0.
     ):
         super(ConvBlock, self).__init__()
@@ -70,6 +70,9 @@ class ContentEncoder(nn.Module):
                 )
             )
             
+        # eliminate instance-specific informations (e.g. tempo info)
+        layers.append(nn.InstanceNorm1d(out_channels))
+        
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -81,10 +84,39 @@ class TempoEmbedding(nn.Module):
     '''
     def __init__(
         self,
-        in_channels=1
+        in_channels=1,
+        out_channels=1024,
+        base_channels=32,
+        block = ConvBlock
     ):
         super(TempoEmbedding, self).__init__()
+        layers = [block(in_channels, base_channels)]
+        for channel_multiplier in range(0, int(math.sqrt(out_channels/base_channels))):
+            layers.append(
+                block(
+                    base_channels*2**channel_multiplier,
+                    base_channels*2**(channel_multiplier+1)
+                )
+            )
+            
+        self.model = nn.Sequential(*layers)
 
+class TSM_NetTemporal(nn.Module):
+    '''
+    Neural embedding for the tempo
+    '''
+    def __init__(
+        self,
+        in_channels=1,
+        out_channels=1024,
+        base_channels=32,
+        block = ConvBlock
+    ):
+        super(TSM_NetTemporal, self).__init__()
+        self.content_encoder = ContentEncoder(in_channels, out_channels, base_channels, block)
+        self.tempo_embedding = TempoEmbedding(in_channels, out_channels, base_channels, block)
+        
+        
 if __name__ == "__main__":
-    model = ContentEncoder()
+    model = TSM_NetTemporal()
     print(model)

@@ -1,5 +1,6 @@
 from tsmnet.modules import Autoencoder
 
+from torchvision.transforms.functional import resize
 from pathlib import Path
 import yaml
 import torch
@@ -21,7 +22,7 @@ def load_model(path, device=get_default_device()):
     """
     root = Path(path)
     with open(root / "args.yml", "r") as f:
-        args = yaml.load(f, Loader=yaml.FullLoader)
+        args = yaml.unsafe_load(f)
     netA = Autoencoder([int(n) for n in args.compress_ratios], args.ngf, args.n_residual_layers).to(device)
     netA.load_state_dict(torch.load(root / "best_netA.pt", map_location=device))
     return netA
@@ -67,3 +68,26 @@ class Neuralgram:
         """
         with torch.no_grad():
             return self.netA.decoder(neu.to(self.device)).squeeze(1)
+
+class Stretcher:
+    def __init__(self, path):
+        self.neuralgram = Neuralgram(path)
+        
+    def __call__(self, audio, rate , interpolation=3):
+        neu = self.neuralgram(audio)
+        neu_resized = resize(
+            neu,
+            (*neu.shape[1:-1], int(neu.shape[-1] * (1/rate))),
+            interpolation # see below
+        )
+        return self.neuralgram.inverse(neu_resized).detach().cpu().numpy()
+        # from torchaudio source
+        # inverse_modes_mapping = {
+        #     0: InterpolationMode.NEAREST,
+        #     2: InterpolationMode.BILINEAR,
+        #     3: InterpolationMode.BICUBIC,
+        #     4: InterpolationMode.BOX,
+        #     5: InterpolationMode.HAMMING,
+        #     1: InterpolationMode.LANCZOS,
+        # }
+    

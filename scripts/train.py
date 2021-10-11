@@ -1,5 +1,5 @@
 import sys, os
-sys.path.append(os.path.dirname(sys.path[0]))
+sys.path.append(os.path.dirname(os.getcwd()))
 
 from tsmnet.dataset import AudioDataset
 from tsmnet.modules import Autoencoder, Discriminator
@@ -74,6 +74,7 @@ def main():
         optA = torch.optim.Adam(netA.parameters(), lr=1e-4, betas=(0.5, 0.9))
         optD = torch.optim.Adam(netD.parameters(), lr=1e-4, betas=(0.5, 0.9))
 
+        # netA.load_state_dict(torch.load(root / ".." / "logs-musicnet-512x" / "weights" / "best_netA.pt"))
         if load_root and load_root.exists():
             netA.load_state_dict(torch.load(load_root / "netA.pt"))
             optA.load_state_dict(torch.load(load_root / "optA.pt"))

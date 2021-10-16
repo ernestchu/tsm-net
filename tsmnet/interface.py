@@ -55,7 +55,7 @@ class Neuralgram:
             torch.tensor: neuralgram computed on input audio (batch_size, channels, timesteps)
         """
         with torch.no_grad():
-            return self.netA.encoder(audio.unsqueeze(1).to(self.device))
+            return self.netA.encoder(touch.as_tensor(audio).unsqueeze(1).to(self.device))
 
     def inverse(self, neu):
         """

@@ -74,6 +74,8 @@ class Stretcher:
         self.neuralgram = Neuralgram(path)
         
     def __call__(self, audio, rate , interpolation=3):
+        if rate == 1:
+            return audio
         neu = self.neuralgram(audio)
         neu_resized = resize(
             neu,

@@ -1,5 +1,5 @@
 import sys, os
-sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.path.dirname(os.path.dirname(os.getcwd() + '/' + __file__)))
 
 from tsmnet.dataset import AudioDataset
 from tsmnet.modules import Autoencoder, Discriminator

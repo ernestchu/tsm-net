@@ -10,7 +10,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('audio_path', help='e.g. ~/Datasets/gem.wav', type=Path)
     parser.add_argument('weight_dir', help='e.g. ../scripts/logs-fma/weights', type=Path)
-    parser.add_argument('-o', '--out_dir', default='out-from-demo', help='output directory', type=Path)
+    parser.add_argument('-o', '--out_dir', default='samples', help='output directory', type=Path)
     parser.add_argument('-s', '--start', default=None, help='start timestamp', type=int)
     parser.add_argument('-e', '--end', default=None, help='end timestamp', type=int)
     

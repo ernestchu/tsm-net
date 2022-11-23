@@ -1,3 +1,3 @@
-# TSM-Net: Temporal Compressing Autoencoder with Adversarial Losses for Time-Scale Modification on Audio Signals
+# TSM-Net: Audio Time-Scale Modification with Temporal Compressing Networks
 Adapted from [MelGAN repo](https://github.com/descriptinc/melgan-neurips)
 
